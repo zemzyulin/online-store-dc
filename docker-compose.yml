@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  online-store-dc:
+    image: node:15-alpine
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - 3000:3000
+    working_dir: /online-store-dc
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: postgres
+    volumes:
+      - ./:/online-store-dc
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - models:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./fill-db.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+volumes:
+  models:
